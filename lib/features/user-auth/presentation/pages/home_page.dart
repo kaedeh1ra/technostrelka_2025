@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technostrelka_2025/global/commands/toast.dart';
 
 class HomePage extends StatelessWidget {
@@ -84,7 +85,9 @@ class HomePage extends StatelessWidget {
             },
           ),
           GestureDetector(
-            onTap: () {
+            onTap: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('isLoggedIn', false);
               FirebaseAuth.instance.signOut();
               Navigator.pushNamedAndRemoveUntil(
                 context,
