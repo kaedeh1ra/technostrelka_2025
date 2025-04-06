@@ -35,6 +35,23 @@ class _LoginpageState extends State<Loginpage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _firebaseAuth.authStateChanges().listen((User? user) {
+      // Слушаем изменения состояния аутентификации
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+
+    _firebaseAuth.setPersistence(
+      Persistence.LOCAL,
+    ); // Устанавливаем постоянство LOCAL
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Login Page')),
