@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technostrelka_2025/features/user-auth/presentation/widgets/form_container_widget.dart';
 import 'package:technostrelka_2025/global/commands/error_toast.dart';
 import 'package:technostrelka_2025/global/commands/toast.dart';
@@ -130,6 +131,8 @@ class _SignUpPageState extends State<SignUpPage> {
     });
 
     if (user != null) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
       showToast(message: 'Registration is complete');
       Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
     } else {

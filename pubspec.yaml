@@ -24,6 +24,7 @@ dependencies:
   font_awesome_flutter: any
   google_sign_in: any
   firebase_cloud_firestore: any
+  shared_preferences: any
 
 dev_dependencies:
   flutter_test:
