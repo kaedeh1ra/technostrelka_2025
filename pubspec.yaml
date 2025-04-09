@@ -25,6 +25,9 @@ dependencies:
   google_sign_in: any
   firebase_cloud_firestore: any
   shared_preferences: any
+  flutter_riverpod: any
+  uuid: any
+  go_router: any
 
 dev_dependencies:
   flutter_test:
