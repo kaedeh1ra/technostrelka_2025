@@ -4,12 +4,18 @@ class TextInput extends StatefulWidget {
   final String placeholder;
   final double borderRadius;
   final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  final bool obscureText;
+  final TextInputType keyboardType;
 
   const TextInput({
     super.key,
     required this.placeholder,
     required this.borderRadius,
     this.controller,
+    this.validator,
+    this.obscureText = false,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
@@ -22,6 +28,9 @@ class _TextInputState extends State<TextInput> {
     return TextFormField(
       controller: widget.controller,
       cursorHeight: 12,
+      obscureText: widget.obscureText,
+      keyboardType: widget.keyboardType,
+      validator: widget.validator,
       decoration: InputDecoration(
         hintText: widget.placeholder,
         hintStyle: const TextStyle(

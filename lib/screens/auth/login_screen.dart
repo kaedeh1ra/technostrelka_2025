@@ -1,7 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:technostrelka_2025/providers/task_provider.dart';
+import 'package:mesh_gradient/mesh_gradient.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:technostrelka_2025/theme/app_theme.dart';
+// Import the custom components
+import 'package:technostrelka_2025/widgets/text_input.dart';
+import 'package:technostrelka_2025/widgets/mini_next_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -61,92 +69,151 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Логотип
-                const Icon(Icons.grid_view, size: 80, color: Colors.deepPurple),
-                const SizedBox(height: 16),
-
-                // Название приложения
-                const Text(
-                  'TaskTetris',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 32),
-
-                // Email
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Пожалуйста, введите email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Пожалуйста, введите корректный email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Пароль
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Пароль',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Пожалуйста, введите пароль';
-                    }
-                    if (value.length < 6) {
-                      return 'Пароль должен содержать не менее 6 символов';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Кнопка входа
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child:
-                      _isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text('Войти'),
-                ),
-                const SizedBox(height: 16),
-
-                // Ссылка на регистрацию
-                TextButton(
-                  onPressed: () {
-                    context.go('/register');
-                  },
-                  child: const Text('Нет аккаунта? Зарегистрироваться'),
-                ),
-              ],
+      body: SafeArea(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Gradient background
+            Container(
+              constraints: const BoxConstraints.expand(),
+              child: AnimatedMeshGradient(
+                colors: AppTheme.gradientColors,
+                options: AnimatedMeshGradientOptions(speed: 0.05),
+              ),
             ),
-          ),
+            
+            // Logo at top left
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20),
+                child: SvgPicture.asset('assets/logos/tlm_logo.svg'),
+              )
+            ),
+            
+            // Login form
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 48),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 80),
+                    // Glassmorphism login form
+                    ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 200, sigmaY: 200),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.20),
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(40),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    'Вход',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 25),
+                                  
+                                  // Email field using TextInput component
+                                  SizedBox(
+                                    height: 50,
+                                    child: TextInput(
+                                      controller: _emailController,
+                                      placeholder: 'Email',
+                                      borderRadius: 24,
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Пожалуйста, введите email';
+                                        }
+                                        if (!value.contains('@')) {
+                                          return 'Пожалуйста, введите корректный email';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 25),
+                                  
+                                  // Password field using TextInput component
+                                  SizedBox(
+                                    height: 50,
+                                    child: TextInput(
+                                      controller: _passwordController,
+                                      placeholder: 'Пароль',
+                                      borderRadius: 24,
+                                      obscureText: true,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Пожалуйста, введите пароль';
+                                        }
+                                        if (value.length < 6) {
+                                          return 'Пароль должен содержать не менее 6 символов';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 25),
+                                  
+                                  // Login button using MiniNextButton
+                                  _isLoading
+                                    ? const CircularProgressIndicator(color: Colors.white)
+                                    : MiniNextButton(onPressed: _login),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            // No account text at bottom
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Ещё нет аккаунта?',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => context.go('/register'),
+                      child: const Text(
+                        'Регистрация',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
