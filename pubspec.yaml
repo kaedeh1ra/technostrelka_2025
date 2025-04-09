@@ -28,6 +28,8 @@ dependencies:
   flutter_riverpod: any
   uuid: any
   go_router: any
+  mesh_gradient: ^1.3.8
+  flutter_svg: ^2.0.17
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +53,8 @@ flutter:
     - assets/images/
     - assets/images/homeScreen/
     - assets/images/backrounds/
+    - assets/images/welcomeScreen/
+    - assets/logos/
     - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
