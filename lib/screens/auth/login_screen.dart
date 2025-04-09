@@ -7,7 +7,7 @@ import 'package:technostrelka_2025/providers/task_provider.dart';
 import 'package:mesh_gradient/mesh_gradient.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:technostrelka_2025/theme/app_theme.dart';
-// Import the custom components
+
 import 'package:technostrelka_2025/widgets/text_input.dart';
 import 'package:technostrelka_2025/widgets/mini_next_button.dart';
 
