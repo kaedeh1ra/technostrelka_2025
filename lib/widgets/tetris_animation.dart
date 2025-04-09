@@ -3,8 +3,16 @@ import 'dart:math' as math;
 
 class TetrisAnimation extends StatefulWidget {
   final VoidCallback onAnimationComplete;
+  final int
+  blockCount; // Количество блоков в фигуре (зависит от длительности задачи)
+  final Color color; // Цвет фигуры (зависит от категории задачи)
 
-  const TetrisAnimation({super.key, required this.onAnimationComplete});
+  const TetrisAnimation({
+    super.key,
+    required this.onAnimationComplete,
+    this.blockCount = 4, // По умолчанию 4 блока
+    this.color = Colors.cyan, // По умолчанию голубой цвет
+  });
 
   @override
   State<TetrisAnimation> createState() => _TetrisAnimationState();
@@ -19,22 +27,12 @@ class _TetrisAnimationState extends State<TetrisAnimation>
   // Случайная фигура Tetris
   late TetrisFigure _figure;
 
-  // Список возможных фигур
-  final List<TetrisFigure> _figures = [
-    TetrisFigure.i(),
-    TetrisFigure.j(),
-    TetrisFigure.l(),
-    TetrisFigure.o(),
-    TetrisFigure.s(),
-    TetrisFigure.t(),
-    TetrisFigure.z(),
-  ];
-
   @override
   void initState() {
     super.initState();
 
-    _figure = _figures[math.Random().nextInt(_figures.length)];
+    // Создаем фигуру на основе количества блоков
+    _figure = _createFigureFromBlockCount(widget.blockCount, widget.color);
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1500),
@@ -66,6 +64,86 @@ class _TetrisAnimationState extends State<TetrisAnimation>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  // Создаем фигуру на основе количества блоков
+  TetrisFigure _createFigureFromBlockCount(int blockCount, Color color) {
+    // Если блоков меньше 4, используем стандартные фигуры
+    if (blockCount <= 4) {
+      final figures = [
+        TetrisFigure.i(color: color),
+        TetrisFigure.j(color: color),
+        TetrisFigure.l(color: color),
+        TetrisFigure.o(color: color),
+        TetrisFigure.s(color: color),
+        TetrisFigure.t(color: color),
+        TetrisFigure.z(color: color),
+      ];
+      return figures[math.Random().nextInt(figures.length)];
+    } else {
+      // Для большего количества блоков создаем кастомную фигуру
+      return _createCustomFigure(blockCount, color);
+    }
+  }
+
+  // Создаем кастомную фигуру на основе количества блоков
+  TetrisFigure _createCustomFigure(int blockCount, Color color) {
+    // Определяем размер сетки для фигуры
+    final gridSize = math.max(3, math.sqrt(blockCount).ceil());
+
+    // Создаем пустую сетку
+    final shape = List.generate(gridSize, (_) => List.filled(gridSize, 0));
+
+    // Заполняем сетку блоками
+    int blocksPlaced = 0;
+    int centerX = gridSize ~/ 2;
+    int centerY = gridSize ~/ 2;
+
+    // Сначала размещаем блок в центре
+    shape[centerY][centerX] = 1;
+    blocksPlaced++;
+
+    // Затем размещаем остальные блоки спирально вокруг центра
+    final directions = [
+      [0, 1], // вправо
+      [1, 0], // вниз
+      [0, -1], // влево
+      [-1, 0], // вверх
+    ];
+
+    int x = centerX;
+    int y = centerY;
+    int dirIndex = 0;
+    int stepsInCurrentDir = 1;
+    int stepsTaken = 0;
+    int turnsCount = 0;
+
+    while (blocksPlaced < blockCount && blocksPlaced < gridSize * gridSize) {
+      final dir = directions[dirIndex];
+      x += dir[0];
+      y += dir[1];
+      stepsTaken++;
+
+      // Проверяем, что координаты в пределах сетки
+      if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+        shape[y][x] = 1;
+        blocksPlaced++;
+      }
+
+      // Меняем направление, если нужно
+      if (stepsTaken == stepsInCurrentDir) {
+        dirIndex = (dirIndex + 1) % 4;
+        stepsTaken = 0;
+        turnsCount++;
+
+        // Увеличиваем длину шага каждые два поворота
+        if (turnsCount % 2 == 0) {
+          stepsInCurrentDir++;
+        }
+      }
+    }
+
+    return TetrisFigure(shape: shape, color: color);
   }
 
   @override
@@ -166,7 +244,7 @@ class TetrisFigure {
   TetrisFigure({required this.shape, required this.color});
 
   // I-фигура
-  factory TetrisFigure.i() {
+  factory TetrisFigure.i({Color color = Colors.cyan}) {
     return TetrisFigure(
       shape: [
         [0, 0, 0, 0],
@@ -174,78 +252,78 @@ class TetrisFigure {
         [0, 0, 0, 0],
         [0, 0, 0, 0],
       ],
-      color: Colors.cyan,
+      color: color,
     );
   }
 
   // J-фигура
-  factory TetrisFigure.j() {
+  factory TetrisFigure.j({Color color = Colors.blue}) {
     return TetrisFigure(
       shape: [
         [1, 0, 0],
         [1, 1, 1],
         [0, 0, 0],
       ],
-      color: Colors.blue,
+      color: color,
     );
   }
 
   // L-фигура
-  factory TetrisFigure.l() {
+  factory TetrisFigure.l({Color color = Colors.orange}) {
     return TetrisFigure(
       shape: [
         [0, 0, 1],
         [1, 1, 1],
         [0, 0, 0],
       ],
-      color: Colors.orange,
+      color: color,
     );
   }
 
   // O-фигура
-  factory TetrisFigure.o() {
+  factory TetrisFigure.o({Color color = Colors.yellow}) {
     return TetrisFigure(
       shape: [
         [1, 1],
         [1, 1],
       ],
-      color: Colors.yellow,
+      color: color,
     );
   }
 
   // S-фигура
-  factory TetrisFigure.s() {
+  factory TetrisFigure.s({Color color = Colors.green}) {
     return TetrisFigure(
       shape: [
         [0, 1, 1],
         [1, 1, 0],
         [0, 0, 0],
       ],
-      color: Colors.green,
+      color: color,
     );
   }
 
   // T-фигура
-  factory TetrisFigure.t() {
+  factory TetrisFigure.t({Color color = Colors.purple}) {
     return TetrisFigure(
       shape: [
         [0, 1, 0],
         [1, 1, 1],
         [0, 0, 0],
       ],
-      color: Colors.purple,
+      color: color,
     );
   }
 
   // Z-фигура
-  factory TetrisFigure.z() {
+  factory TetrisFigure.z({Color color = Colors.red}) {
     return TetrisFigure(
       shape: [
         [1, 1, 0],
         [0, 1, 1],
         [0, 0, 0],
       ],
-      color: Colors.red,
+      color: color,
     );
   }
 }

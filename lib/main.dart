@@ -39,7 +39,7 @@ class TaskTetrisApp extends StatelessWidget {
       title: 'TaskTetris',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
     );

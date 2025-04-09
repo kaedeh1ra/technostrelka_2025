@@ -1,9 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:technostrelka_2025/models/task.dart';
 import 'package:technostrelka_2025/providers/task_provider.dart';
+import 'package:technostrelka_2025/theme/app_theme.dart';
 import 'package:technostrelka_2025/widgets/task_card.dart';
 import 'package:technostrelka_2025/widgets/task_detail_bottom_sheet.dart';
+import 'package:technostrelka_2025/widgets/tetris_animation.dart';
 
 class WeekViewScreen extends ConsumerWidget {
   const WeekViewScreen({super.key});
@@ -213,10 +217,7 @@ class WeekViewScreen extends ConsumerWidget {
                     Positioned.fill(
                       child: Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: GestureDetector(
-                          onTap: () => _showTaskDetails(context, task),
-                          child: TaskCard(task: task, compact: true),
-                        ),
+                        child: _buildTaskWidget(context, task),
                       ),
                     ),
                 ],
@@ -228,27 +229,66 @@ class WeekViewScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildTaskWidget(BuildContext context, Task task) {
+    // Если задача выполнена, показываем фигуру Tetris
+    if (task.isCompleted) {
+      final categoryColor = AppTheme.getCategoryColor(task.category);
+      final durationInHours = task.endTime.difference(task.startTime).inHours;
+
+      return GestureDetector(
+        onTap: () => _showTaskDetails(context, task),
+        child: CustomPaint(
+          painter: TetrisBlockPainter(
+            color: categoryColor,
+            blockCount: durationInHours,
+          ),
+        ),
+      );
+    } else {
+      // Иначе показываем обычную карточку задачи
+      return GestureDetector(
+        onTap: () => _showTaskDetails(context, task),
+        child: TaskCard(task: task, compact: true),
+      );
+    }
+  }
+
   List<Task> _getTasksForDayAndHour(
     List<Task> allTasks,
     DateTime day,
     int hour,
   ) {
     return allTasks.where((task) {
-      final taskDay = DateTime(
+      final taskStartDay = DateTime(
         task.startTime.year,
         task.startTime.month,
         task.startTime.day,
       );
+
+      final taskEndDay = DateTime(
+        task.endTime.year,
+        task.endTime.month,
+        task.endTime.day,
+      );
+
       final compareDay = DateTime(day.year, day.month, day.day);
 
-      // Проверяем, что задача в этот день
-      if (!taskDay.isAtSameMomentAs(compareDay)) {
+      final isDayInRange =
+          compareDay.isAtSameMomentAs(taskStartDay) ||
+          compareDay.isAtSameMomentAs(taskEndDay) ||
+          (compareDay.isAfter(taskStartDay) && compareDay.isBefore(taskEndDay));
+
+      if (!isDayInRange) {
         return false;
       }
 
-      // Проверяем, что задача в этот час
-      return task.startTime.hour == hour ||
-          (task.startTime.hour < hour && task.endTime.hour > hour);
+      if (compareDay.isAtSameMomentAs(taskStartDay)) {
+        return hour >= task.startTime.hour;
+      } else if (compareDay.isAtSameMomentAs(taskEndDay)) {
+        return hour <= task.endTime.hour;
+      } else {
+        return true;
+      }
     }).toList();
   }
 
@@ -268,5 +308,77 @@ class WeekViewScreen extends ConsumerWidget {
       ),
       builder: (context) => TaskDetailBottomSheet(task: task),
     );
+  }
+}
+
+// Painter для отображения блоков Tetris для выполненных задач
+class TetrisBlockPainter extends CustomPainter {
+  final Color color;
+  final int blockCount;
+
+  TetrisBlockPainter({required this.color, required this.blockCount});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint =
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.fill;
+
+    final borderPaint =
+        Paint()
+          ..color = color.withOpacity(0.7)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1;
+
+    // Определяем размер блока
+    final blockSize = size.height / 3;
+
+    // Определяем количество блоков, которые можно разместить
+    final maxBlocks = (size.width / blockSize).floor() * 3;
+    final actualBlocks = math.min(blockCount, maxBlocks);
+
+    // Размещаем блоки в виде фигуры Tetris
+    int blocksPlaced = 0;
+
+    // Создаем сетку 3x3 для размещения блоков
+    final grid = List.generate(
+      3,
+      (_) => List.filled((size.width / blockSize).ceil(), 0),
+    );
+
+    // Заполняем сетку блоками
+    for (int row = 0; row < 3 && blocksPlaced < actualBlocks; row++) {
+      for (
+        int col = 0;
+        col < (size.width / blockSize).floor() && blocksPlaced < actualBlocks;
+        col++
+      ) {
+        grid[row][col] = 1;
+        blocksPlaced++;
+      }
+    }
+
+    // Рисуем блоки
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < (size.width / blockSize).floor(); col++) {
+        if (grid[row][col] == 1) {
+          final rect = Rect.fromLTWH(
+            col * blockSize,
+            row * blockSize,
+            blockSize,
+            blockSize,
+          );
+
+          canvas.drawRect(rect, paint);
+          canvas.drawRect(rect, borderPaint);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant TetrisBlockPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.blockCount != blockCount;
   }
 }

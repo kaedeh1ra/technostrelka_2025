@@ -187,22 +187,34 @@ class MonthViewScreen extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    // Показываем максимум 3 задачи, остальные - счетчиком
-    final displayTasks = tasks.take(3).toList();
+    final displayTasks =
+        tasks.toList()..sort((a, b) {
+          if (a.isCompleted != b.isCompleted) {
+            return a.isCompleted ? 1 : -1;
+          }
+
+          if (a.priority != b.priority) {
+            return a.priority ? -1 : 1;
+          }
+          return 0;
+        });
+
     final remainingTasks = tasks.length - displayTasks.length;
 
-    return Column(
-      children: [
-        ...displayTasks.map((task) => _buildTaskItem(context, task)),
-        if (remainingTasks > 0)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: Text(
-              '+ ещё $remainingTasks',
-              style: Theme.of(context).textTheme.bodySmall,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ...displayTasks.map((task) => _buildTaskItem(context, task)),
+          if (remainingTasks > 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Text(
+                '+ ещё $remainingTasks',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

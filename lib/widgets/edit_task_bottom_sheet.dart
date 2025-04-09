@@ -2,33 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:technostrelka_2025/models/task.dart';
 import 'package:technostrelka_2025/providers/task_provider.dart';
-import 'package:uuid/uuid.dart';
 
-class AddTaskBottomSheet extends ConsumerStatefulWidget {
-  const AddTaskBottomSheet({super.key});
+class EditTaskBottomSheet extends ConsumerStatefulWidget {
+  final Task task;
+
+  const EditTaskBottomSheet({super.key, required this.task});
 
   @override
-  ConsumerState<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
+  ConsumerState<EditTaskBottomSheet> createState() =>
+      _EditTaskBottomSheetState();
 }
 
-class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
+class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
 
-  DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now();
-  DateTime _startTime = DateTime.now();
-  DateTime _endTime = DateTime.now().add(const Duration(hours: 1));
-  String _category = 'Учёба';
-  bool _priority = false;
-  bool _isMultiDay = false;
+  late DateTime _startDate;
+  late DateTime _endDate;
+  late DateTime _startTime;
+  late DateTime _endTime;
+  late String _category;
+  late bool _priority;
+  late bool _isMultiDay;
 
   @override
   void initState() {
     super.initState();
-    // Инициализируем конечную дату такой же, как начальная
-    _endDate = DateTime(_startDate.year, _startDate.month, _startDate.day);
+
+    // Инициализируем контроллеры
+    _titleController = TextEditingController(text: widget.task.title);
+    _descriptionController = TextEditingController(
+      text: widget.task.description,
+    );
+
+    // Инициализируем даты и время
+    _startDate = DateTime(
+      widget.task.startTime.year,
+      widget.task.startTime.month,
+      widget.task.startTime.day,
+    );
+
+    _endDate = DateTime(
+      widget.task.endTime.year,
+      widget.task.endTime.month,
+      widget.task.endTime.day,
+    );
+
+    _startTime = widget.task.startTime;
+    _endTime = widget.task.endTime;
+
+    // Инициализируем категорию и приоритет
+    _category = widget.task.category;
+    _priority = widget.task.priority;
+
+    // Определяем, является ли задача многодневной
+    _isMultiDay = !_isSameDay(_startDate, _endDate);
+  }
+
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   @override
@@ -107,11 +142,15 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
           pickedDate.year,
           pickedDate.month,
           pickedDate.day,
+        );
+
+        _startTime = DateTime(
+          _startDate.year,
+          _startDate.month,
+          _startDate.day,
           _startTime.hour,
           _startTime.minute,
         );
-
-        _startTime = _startDate;
 
         // Если дата окончания раньше даты начала, устанавливаем её равной дате начала
         if (_endDate.isBefore(_startDate)) {
@@ -119,10 +158,15 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
             _startDate.year,
             _startDate.month,
             _startDate.day,
+          );
+
+          _endTime = DateTime(
+            _endDate.year,
+            _endDate.month,
+            _endDate.day,
             _endTime.hour,
             _endTime.minute,
           );
-          _endTime = _endDate;
         }
       });
     }
@@ -139,15 +183,15 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
     if (pickedDate != null) {
       setState(() {
         // Обновляем дату окончания, сохраняя время
-        _endDate = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
+        _endDate = DateTime(pickedDate.year, pickedDate.month, pickedDate.day);
+
+        _endTime = DateTime(
+          _endDate.year,
+          _endDate.month,
+          _endDate.day,
           _endTime.hour,
           _endTime.minute,
         );
-
-        _endTime = _endDate;
       });
     }
   }
@@ -157,10 +201,12 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
       _isMultiDay = value;
       if (!_isMultiDay) {
         // Если отключаем многодневный режим, устанавливаем конечную дату равной начальной
-        _endDate = DateTime(
-          _startDate.year,
-          _startDate.month,
-          _startDate.day,
+        _endDate = DateTime(_startDate.year, _startDate.month, _startDate.day);
+
+        _endTime = DateTime(
+          _endDate.year,
+          _endDate.month,
+          _endDate.day,
           _endTime.hour,
           _endTime.minute,
         );
@@ -199,24 +245,22 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
         return;
       }
 
-      // Создаем новую задачу
-      final newTask = Task(
-        id: const Uuid().v4(),
+      // Обновляем задачу
+      final updatedTask = widget.task.copyWith(
         title: _titleController.text,
         description: _descriptionController.text,
         startTime: startDateTime,
         endTime: endDateTime,
         category: _category,
         priority: _priority,
-        isCompleted: false,
-        createdAt: DateTime.now(),
       );
 
       // Сохраняем в Firebase
       firebaseService
-          .addTask(newTask)
+          .updateTask(updatedTask)
           .then((_) {
             Navigator.pop(context);
+            Navigator.pop(context); // Закрываем также экран деталей задачи
           })
           .catchError((error) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -246,7 +290,7 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
               // Заголовок
               const Center(
                 child: Text(
-                  'Добавить задачу',
+                  'Изменить задачу',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),

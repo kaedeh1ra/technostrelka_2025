@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:technostrelka_2025/models/task.dart';
 import 'package:technostrelka_2025/providers/task_provider.dart';
 import 'package:technostrelka_2025/theme/app_theme.dart';
+import 'package:technostrelka_2025/widgets/edit_task_bottom_sheet.dart';
 import 'package:technostrelka_2025/widgets/pomodoro_dialog.dart';
+import 'package:technostrelka_2025/widgets/tetris_animation.dart';
 
 class TaskDetailBottomSheet extends ConsumerWidget {
   final Task task;
@@ -38,14 +40,13 @@ class TaskDetailBottomSheet extends ConsumerWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: () {
-                  // Здесь будет редактирование задачи
-                  Navigator.pop(context);
-                },
+                onPressed: () => _showEditTaskBottomSheet(context, task),
+                tooltip: 'Редактировать',
               ),
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),
                 onPressed: () => _confirmDelete(context, ref),
+                tooltip: 'Удалить',
               ),
             ],
           ),
@@ -168,8 +169,18 @@ class TaskDetailBottomSheet extends ConsumerWidget {
         .then((_) {
           Navigator.pop(context);
 
+          // Если задача отмечена как выполненная, проверяем длительность
           if (updatedTask.isCompleted) {
-            _showCompletionAnimation(context);
+            final durationInDays =
+                updatedTask.endTime.difference(updatedTask.startTime).inDays;
+
+            // Если задача длится 7 или более дней, вызываем neuroAnswer()
+            if (durationInDays >= 7) {
+              _neuroAnswer();
+            } else {
+              // Иначе показываем анимацию Tetris
+              _showCompletionAnimation(context, updatedTask);
+            }
           }
         })
         .catchError((error) {
@@ -200,8 +211,8 @@ class TaskDetailBottomSheet extends ConsumerWidget {
                   firebaseService
                       .deleteTask(task.id)
                       .then((_) {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
+                        Navigator.pop(context); // Закрываем диалог
+                        Navigator.pop(context); // Закрываем bottom sheet
                       })
                       .catchError((error) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -222,18 +233,45 @@ class TaskDetailBottomSheet extends ConsumerWidget {
     );
   }
 
-  void _showCompletionAnimation(BuildContext context) {
-    // Здесь будет анимация в стиле Tetris
-    // Это заглушка, которую нужно будет заменить на реальную анимацию
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Задача выполнена! 🎉'),
-        backgroundColor: Colors.green,
-      ),
+  void _showCompletionAnimation(BuildContext context, Task task) {
+    // Рассчитываем количество блоков на основе длительности задачи
+    final durationInHours = task.endTime.difference(task.startTime).inHours;
+    final categoryColor = AppTheme.getCategoryColor(task.category);
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: TetrisAnimation(
+              blockCount: durationInHours,
+              color: categoryColor,
+              onAnimationComplete: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
     );
+  }
+
+  void _neuroAnswer() {
+    // TODO: Здесь будет реализация метода neuroAnswer()
   }
 
   void _showPomodoroDialog(BuildContext context) {
     showDialog(context: context, builder: (context) => const PomodoroDialog());
+  }
+
+  void _showEditTaskBottomSheet(BuildContext context, Task task) {
+    Navigator.pop(context); // Закрываем текущий bottom sheet
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => EditTaskBottomSheet(task: task),
+    );
   }
 }
