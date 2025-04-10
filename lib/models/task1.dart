@@ -39,27 +39,27 @@ class Task {
   static List<List<int>> _getShapeForSize(TaskSize size) {
     switch (size) {
       case TaskSize.small:
-        // Small 2x2 square
+        // Квадрат 2х2
         return [
           [1, 1],
           [1, 1]
         ];
       case TaskSize.medium:
-        // Medium L shape
+        // Фигурка L
         return [
           [1, 0],
           [1, 0],
           [1, 1]
         ];
       case TaskSize.large:
-        // Large T shape
+        // Фигурка T
         return [
           [1, 1, 1],
           [0, 1, 0],
           [0, 1, 0]
         ];
       case TaskSize.extraLarge:
-        // Extra large shape
+        // Большая фигурка типа T
         return [
           [1, 1, 1, 1],
           [0, 0, 1, 0],
@@ -77,7 +77,7 @@ class Task {
     List<List<int>>? shape,
   }) {
     return Task(
-      id: this.id, // Keep the same ID
+      id: this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       size: size ?? this.size,
@@ -86,7 +86,6 @@ class Task {
     );
   }
   
-  // Rotate the shape 90 degrees clockwise
   Task rotated() {
     int rows = shape.length;
     int cols = shape[0].length;
@@ -97,7 +96,7 @@ class Task {
     );
     
     return Task(
-      id: this.id, // Keep the same ID
+      id: this.id,
       title: title,
       description: description,
       size: size,

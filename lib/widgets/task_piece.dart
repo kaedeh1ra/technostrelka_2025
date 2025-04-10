@@ -10,18 +10,12 @@ class TaskPiece extends StatelessWidget {
   Widget build(BuildContext context) {
     final cellSize =
         (MediaQuery.of(context).size.width - 32) / 10; // 10 columns
-
-    // Calculate the center position for the task name
     int centerRow = task.shape.length ~/ 2;
     int centerCol = task.shape[0].length ~/ 2;
-
-    // Find if there's a filled cell at the center
     bool hasCenterCell =
         task.shape.length > centerRow &&
         task.shape[0].length > centerCol &&
         task.shape[centerRow][centerCol] == 1;
-
-    // If center is not filled, find the first filled cell
     int labelRow = centerRow;
     int labelCol = centerCol;
 
@@ -42,7 +36,6 @@ class TaskPiece extends StatelessWidget {
 
     return Stack(
       children: [
-        // Draw the shape
         Column(
           children:
               task.shape.map((row) {
@@ -69,8 +62,6 @@ class TaskPiece extends StatelessWidget {
                 );
               }).toList(),
         ),
-
-        // Position the task name at the center or first filled cell
         Positioned(
           top: labelRow * cellSize,
           left: labelCol * cellSize,
@@ -100,7 +91,6 @@ class TaskPiece extends StatelessWidget {
   }
 
   Color _getContrastColor(Color color) {
-    // Calculate luminance to determine if we need white or black text
     final luminance =
         (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
     return luminance > 0.5 ? Colors.black : Colors.white;

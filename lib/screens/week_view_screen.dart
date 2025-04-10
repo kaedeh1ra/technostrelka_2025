@@ -60,7 +60,7 @@ class WeekViewScreen extends ConsumerWidget {
                 lastDate: DateTime(2030),
               );
               if (picked != null) {
-                // Получаем понедельник выбранной недели
+
                 final monday = picked.subtract(
                   Duration(days: picked.weekday - 1),
                 );
@@ -89,23 +89,23 @@ class WeekViewScreen extends ConsumerWidget {
     List<Task> allTasks,
     DateTime weekStart,
   ) {
-    // Дни недели
+
     final weekDays = List.generate(
       7,
       (index) => weekStart.add(Duration(days: index)),
     );
 
-    // Часы с 8:00 до 20:00
+
     final hours = List.generate(24, (index) => index);
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
         children: [
-          // Заголовок с днями недели
+
           _buildDaysHeader(context, weekDays),
 
-          // Сетка часов и задач
+
           for (var hour in hours)
             _buildHourRow(context, hour, weekDays, allTasks),
         ],
@@ -117,8 +117,7 @@ class WeekViewScreen extends ConsumerWidget {
     final dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
     return Row(
-      children: [
-        // Пустая ячейка для времени
+      children: [ // Пустая ячейка для времени
         SizedBox(
           width: 60,
           height: 50,
@@ -179,7 +178,7 @@ class WeekViewScreen extends ConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Временная метка
+
         SizedBox(
           width: 60,
           height: 60,
@@ -190,7 +189,7 @@ class WeekViewScreen extends ConsumerWidget {
             ),
           ),
         ),
-        // Ячейки для каждого дня
+
         ...List.generate(7, (dayIndex) {
           final day = weekDays[dayIndex];
           final tasksForDay = _getTasksForDayAndHour(allTasks, day, hour);
@@ -246,12 +245,12 @@ List<Task> _getTasksForDayAndHour(List<Task> allTasks, DateTime day, int hour) {
 
     final compareDay = DateTime(day.year, day.month, day.day);
 
-    // Проверяем, что задача в этот день
+
     if (!taskDay.isAtSameMomentAs(compareDay)) {
       return false;
     }
 
-    // Проверяем, что задача в этот час
+
     return task.startTime.hour == hour ||
         (task.startTime.hour < hour && task.endTime.hour > hour);
   }).toList();

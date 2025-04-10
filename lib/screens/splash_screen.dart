@@ -30,7 +30,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     _animationController.forward();
 
-    // Проверяем авторизацию и перенаправляем пользователя
+
     _checkAuth();
   }
 
@@ -41,7 +41,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _checkAuth() async {
-    // Имитация задержки для отображения сплеш-экрана
+
     await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
@@ -63,37 +63,33 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Анимированный логотип
+
             AnimatedBuilder(
               animation: _scaleAnimation,
               builder: (context, child) {
                 return Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: const Icon(
-                    Icons.grid_view,
-                    size: 100,
-                    color: Colors.deepPurple,
-                  ),
+                    scale: _scaleAnimation.value,
+                    child: Image.asset('assets/icons/AppLogo.png', height: 100, width: 100, fit: BoxFit.contain)
                 );
               },
             ),
             const SizedBox(height: 24),
 
-            // Название приложения
+
             const Text(
-              'TaskTetris',
+              'Tizy',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
-            // Подзаголовок
+
             const Text(
               'Управляйте задачами в стиле Tetris',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 48),
 
-            // Индикатор загрузки
+
             const CircularProgressIndicator(),
           ],
         ),

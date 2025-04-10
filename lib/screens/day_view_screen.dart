@@ -68,7 +68,7 @@ class DayViewScreen extends ConsumerWidget {
   }
 
   Widget _buildTimelineView(BuildContext context, List<Task> tasks) {
-    // Часы с 0:00 до 23:00
+
     final hours = List.generate(24, (index) => index);
 
     return ListView.builder(
@@ -93,7 +93,7 @@ class DayViewScreen extends ConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Временная метка
+
         SizedBox(
           width: 60,
           height: 80,
@@ -104,7 +104,7 @@ class DayViewScreen extends ConsumerWidget {
             ),
           ),
         ),
-        // Контейнер для задач
+
         Expanded(
           child: Container(
             height: 80,
@@ -125,21 +125,21 @@ class DayViewScreen extends ConsumerWidget {
   }
 
   Widget _buildTaskItem(BuildContext context, Task task, int hour) {
-    // Расчет позиции и размера задачи
+
     final startHour = task.startTime.hour;
     final startMinute = task.startTime.minute;
     final endHour = task.endTime.hour;
     final endMinute = task.endTime.minute;
 
-    // Если задача начинается в этот час
+
     if (startHour == hour) {
-      // Высота задачи в зависимости от длительности
+
       final durationInMinutes =
           (endHour - startHour) * 60 + (endMinute - startMinute);
       final heightPercentage = durationInMinutes / 60.0;
       final height = 80.0 * heightPercentage;
 
-      // Позиция по вертикали в зависимости от минут
+
       final topOffset = (startMinute / 60.0) * 0.0;
 
       return Positioned(
@@ -159,7 +159,7 @@ class DayViewScreen extends ConsumerWidget {
       );
     }
 
-    // Если задача продолжается в этот час
+
     if (startHour < hour && endHour > hour) {
       return Positioned(
         top: 0,

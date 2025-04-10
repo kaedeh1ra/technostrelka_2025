@@ -74,15 +74,11 @@ class _PomodoroDialogState extends State<PomodoroDialog>
         } else {
           _timer?.cancel();
           _isRunning = false;
-
-          // Переключаемся между работой и отдыхом
           _isBreak = !_isBreak;
           _secondsRemaining = _isBreak ? _breakDuration : _workDuration;
 
-          // Показываем уведомление
+          // Уведомление
           _showNotification();
-
-          // Обновляем анимацию
           _animationController.duration = Duration(
             seconds: _isBreak ? _breakDuration : _workDuration,
           );
@@ -137,8 +133,6 @@ class _PomodoroDialogState extends State<PomodoroDialog>
       _breakDuration = breakMinutes * 60;
       _secondsRemaining = _isBreak ? _breakDuration : _workDuration;
       _isSettingsOpen = false;
-
-      // Обновляем длительность анимации
       _animationController.duration = Duration(
         seconds: _isBreak ? _breakDuration : _workDuration,
       );

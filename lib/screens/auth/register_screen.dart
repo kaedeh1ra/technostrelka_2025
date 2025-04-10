@@ -1,16 +1,19 @@
 import 'dart:io';
 import 'dart:ui';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // Import go_router
 import 'package:technostrelka_2025/screens/auth/login_screen.dart';
 import 'package:technostrelka_2025/theme/app_theme.dart';
 import 'package:technostrelka_2025/widgets/mini_next_button.dart';
 import 'package:technostrelka_2025/widgets/text_input.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:mesh_gradient/mesh_gradient.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as path;
+import 'package:technostrelka_2025/screens/home_screen.dart'; // Импортируйте ваш HomeScreen
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -35,7 +38,7 @@ class RegisterScreen extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.only(top: 10, left: 20),
                 child: SvgPicture.asset('assets/logos/tlm_logo.svg'),
-              )
+              ),
             ),
             BuildRegisterScreen(),
             Column(
@@ -87,7 +90,8 @@ class HaveAccount extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Уже есть аккаунт?',
+        Text(
+          'Уже есть аккаунт?',
           style: TextStyle(
             color: Colors.white,
             fontSize: 17,
@@ -95,17 +99,11 @@ class HaveAccount extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen())
-            )
+            context.go('/login')
           },
-          child: Text('Войти',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-              fontWeight: FontWeight.bold
-            ),
+          child: Text(
+            'Войти',
+            style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
           ),
         )
       ],
@@ -128,9 +126,80 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
   File? _avatarImage;
   bool _isLoading = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _avatarImage = File(image.path);
+      });
+    }
+  }
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await _auth.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        ).then((userCredential) async {
+          String? localImagePath;
+
+          if (_avatarImage != null) {
+
+            final Directory appDir = await getApplicationDocumentsDirectory();
+            final String imagePath = path.join(appDir.path, 'avatar_${userCredential.user!.uid}.jpg');
+            final File localImage = await _avatarImage!.copy(imagePath);
+            localImagePath = localImage.path;
+
+
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('avatarPath', localImagePath);
+          }
+
+          await userCredential.user!.updateDisplayName(_nameController.text.trim());
+
+
+          await _auth.signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+
+          context.go('/home');
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Регистрация прошла успешно!')),
+          );
+        });
+      } on FirebaseAuthException catch (e) {
+        String errorMessage = 'Ошибка регистрации: ${e.message}';
+        if (e.code == 'weak-password') {
+          errorMessage = 'Пароль слишком слабый.';
+        } else if (e.code == 'email-already-in-use') {
+          errorMessage = 'Аккаунт с таким email уже существует.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Произошла ошибка: $e')),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -141,79 +210,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 512,
-      maxHeight: 512,
-      imageQuality: 85,
-    );
-    
-    if (image != null) {
-      setState(() {
-        _avatarImage = File(image.path);
-      });
-    }
-  }
-
-  void _register() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-      
-      try {
-        // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
-        
-        // Here you would normally send the registration data to your API
-        // Example:
-        // final response = await supabase.auth.signUp(
-        //   email: _emailController.text,
-        //   password: _passwordController.text,
-        // );
-        
-        // Upload avatar if selected
-        if (_avatarImage != null) {
-          // Example:
-          // final String path = 'avatars/${response.user!.id}';
-          // await supabase.storage.from('avatars').upload(path, _avatarImage!);
-          // final String avatarUrl = supabase.storage.from('avatars').getPublicUrl(path);
-          
-          // Update user profile with avatar URL
-          // await supabase.from('profiles').upsert({
-          //   'id': response.user!.id,
-          //   'name': _nameController.text,
-          //   'avatar_url': avatarUrl,
-          // });
-        }
-        
-        if (mounted) {
-          // Navigate to the next screen after successful registration
-          // Navigator.pushReplacementNamed(context, '/home');
-          
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Регистрация успешна!')),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Ошибка: ${e.toString()}')),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -222,7 +218,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
         filter: ImageFilter.blur(sigmaX: 200, sigmaY: 200),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.20),
+            color: Colors.white.withOpacity(0.20),
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           child: Padding(
@@ -232,7 +228,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
               child: Column(
                 spacing: 32,
                 children: [
-                  Text('Регистрация',
+                  Text(
+                    'Регистрация',
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,
@@ -244,26 +241,26 @@ class _RegistrationFormState extends State<RegistrationForm> {
                       GestureDetector(
                         onTap: _pickImage,
                         child: _avatarImage != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(64),
-                              child: Container(
-                                width: 128,
-                                height: 128,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 2)
-                                ),
-                                child: Image.file(
-                                  _avatarImage!,
-                                  width: 128,
-                                  height: 128,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            )
-                          : AddPhoto(),
+                            ? ClipRRect(
+                          borderRadius: BorderRadius.circular(64),
+                          child: Container(
+                            width: 128,
+                            height: 128,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 2)),
+                            child: Image.file(
+                              _avatarImage!,
+                              width: 128,
+                              height: 128,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                            : AddPhoto(),
                       ),
-                      Text('Добавить фото',
+                      Text(
+                        'Добавить фото',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.white,
@@ -278,7 +275,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         height: 30,
                         child: TextInput(
                           controller: _nameController,
-                          placeholder: 'Имя', 
+                          placeholder: 'Имя',
                           borderRadius: 24,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -286,13 +283,14 @@ class _RegistrationFormState extends State<RegistrationForm> {
                             }
                             return null;
                           },
-                        ) 
+
+                        ),
                       ),
                       SizedBox(
                         height: 30,
                         child: TextInput(
                           controller: _emailController,
-                          placeholder: 'Email', 
+                          placeholder: 'Email',
                           borderRadius: 24,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
@@ -305,13 +303,14 @@ class _RegistrationFormState extends State<RegistrationForm> {
                             }
                             return null;
                           },
-                        )
+
+                        ),
                       ),
                       SizedBox(
                         height: 30,
                         child: TextInput(
                           controller: _passwordController,
-                          placeholder: 'Пароль', 
+                          placeholder: 'Пароль',
                           borderRadius: 24,
                           obscureText: true,
                           validator: (value) {
@@ -323,13 +322,14 @@ class _RegistrationFormState extends State<RegistrationForm> {
                             }
                             return null;
                           },
-                        )
+
+                        ),
                       ),
                       SizedBox(
                         height: 30,
                         child: TextInput(
                           controller: _confirmPasswordController,
-                          placeholder: 'Подтверждение пароля', 
+                          placeholder: 'Подтверждение пароля',
                           borderRadius: 24,
                           obscureText: true,
                           validator: (value) {
@@ -341,18 +341,19 @@ class _RegistrationFormState extends State<RegistrationForm> {
                             }
                             return null;
                           },
-                        )
+
+                        ),
                       ),
-                      _isLoading 
-                        ? SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3,
-                            ),
-                          )
-                        : MiniNextButton(onPressed: _register)
+                      _isLoading
+                          ? SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
+                      )
+                          : MiniNextButton(onPressed: _register)
                     ],
                   ),
                 ],
@@ -381,7 +382,7 @@ class AddPhoto extends StatelessWidget {
           height: 128,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 2)
+            border: Border.all(color: Colors.white, width: 2),
           ),
           child: Icon(
             Icons.add_rounded,

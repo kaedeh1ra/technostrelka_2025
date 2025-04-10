@@ -146,12 +146,10 @@
 //     ).withOpacity(1.0);
 //   }
 //
-//   // Helper functions for Firestore color conversion
 //   static Color _colorFromFirestore(dynamic data) {
 //     if (data is int) {
 //       return Color(data);
 //     } else if (data is String && data.startsWith('Color(')) {
-//       // Handle string representation from previous versions if needed
 //       try {
 //         return Color(int.parse(data.substring(6, data.length - 1)));
 //       } catch (e) {
@@ -165,7 +163,6 @@
 //     return color.value;
 //   }
 //
-//   // Helper functions for Firestore shape conversion
 //   static List<List<int>> _shapeFromFirestore(dynamic data) {
 //     if (data is List) {
 //       try {

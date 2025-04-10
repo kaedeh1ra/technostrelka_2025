@@ -81,19 +81,14 @@ class _TetrisAnimationState extends State<TetrisAnimation>
       ];
       return figures[math.Random().nextInt(figures.length)];
     } else {
-      // Для большего количества блоков создаем кастомную фигуру
       return _createCustomFigure(blockCount, color);
     }
   }
 
   // Создаем кастомную фигуру на основе количества блоков
   TetrisFigure _createCustomFigure(int blockCount, Color color) {
-    // Определяем размер сетки для фигуры
     final gridSize = math.max(3, math.sqrt(blockCount).ceil());
-
-    // Создаем пустую сетку
     final shape = List.generate(gridSize, (_) => List.filled(gridSize, 0));
-
     // Заполняем сетку блоками
     int blocksPlaced = 0;
     int centerX = gridSize ~/ 2;

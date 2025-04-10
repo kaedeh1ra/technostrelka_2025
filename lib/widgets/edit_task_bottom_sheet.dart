@@ -182,9 +182,7 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
 
     if (pickedDate != null) {
       setState(() {
-        // Обновляем дату окончания, сохраняя время
         _endDate = DateTime(pickedDate.year, pickedDate.month, pickedDate.day);
-
         _endTime = DateTime(
           _endDate.year,
           _endDate.month,
@@ -200,7 +198,6 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
     setState(() {
       _isMultiDay = value;
       if (!_isMultiDay) {
-        // Если отключаем многодневный режим, устанавливаем конечную дату равной начальной
         _endDate = DateTime(_startDate.year, _startDate.month, _startDate.day);
 
         _endTime = DateTime(
@@ -218,7 +215,6 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
     if (_formKey.currentState!.validate()) {
       final firebaseService = ref.read(firebaseServiceProvider);
 
-      // Создаем начальное и конечное время с учетом выбранных дат
       final startDateTime = DateTime(
         _startDate.year,
         _startDate.month,
@@ -235,7 +231,6 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
         _endTime.minute,
       );
 
-      // Проверяем, что конечное время позже начального
       if (endDateTime.isBefore(startDateTime)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -245,7 +240,6 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
         return;
       }
 
-      // Обновляем задачу
       final updatedTask = widget.task.copyWith(
         title: _titleController.text,
         description: _descriptionController.text,
@@ -255,12 +249,11 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
         priority: _priority,
       );
 
-      // Сохраняем в Firebase
       firebaseService
           .updateTask(updatedTask)
           .then((_) {
             Navigator.pop(context);
-            Navigator.pop(context); // Закрываем также экран деталей задачи
+            Navigator.pop(context);
           })
           .catchError((error) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -287,7 +280,6 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Заголовок
               const Center(
                 child: Text(
                   'Изменить задачу',
@@ -336,8 +328,6 @@ class _EditTaskBottomSheetState extends ConsumerState<EditTaskBottomSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Дата окончания (только для многодневных задач)
               if (_isMultiDay) ...[
                 InkWell(
                   onTap: () => _selectEndDate(context),

@@ -89,19 +89,19 @@ class MonthViewScreen extends ConsumerWidget {
     List<Task> allTasks,
     DateTime month,
   ) {
-    // Получаем количество дней в месяце
+
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
 
-    // Получаем день недели первого дня месяца (0 - понедельник, 6 - воскресенье)
+
     final firstDayWeekday = DateTime(month.year, month.month, 1).weekday;
 
-    // Корректируем, чтобы понедельник был 0
+
     final adjustedFirstDay = firstDayWeekday - 1;
 
-    // Создаем сетку календаря
+
     final calendarDays = <Widget>[];
 
-    // Добавляем заголовки дней недели
+
     final dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     for (var dayName in dayNames) {
       calendarDays.add(
@@ -113,7 +113,7 @@ class MonthViewScreen extends ConsumerWidget {
       );
     }
 
-    // Добавляем пустые ячейки для дней до начала месяца
+
     for (var i = 0; i < adjustedFirstDay; i++) {
       calendarDays.add(
         Container(
@@ -124,7 +124,7 @@ class MonthViewScreen extends ConsumerWidget {
       );
     }
 
-    // Добавляем дни месяца
+
     for (var day = 1; day <= daysInMonth; day++) {
       final date = DateTime(month.year, month.month, day);
       final tasksForDay = _getTasksForDay(allTasks, date);
@@ -144,7 +144,7 @@ class MonthViewScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Номер дня
+
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Text(
@@ -152,7 +152,7 @@ class MonthViewScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
-              // Задачи на день
+
               Expanded(child: _buildTasksForDay(context, tasksForDay)),
             ],
           ),
@@ -160,7 +160,7 @@ class MonthViewScreen extends ConsumerWidget {
       );
     }
 
-    // Добавляем пустые ячейки в конце, чтобы заполнить сетку
+
     final totalCells = calendarDays.length;
     final remainingCells = 7 - (totalCells % 7);
     if (remainingCells < 7) {

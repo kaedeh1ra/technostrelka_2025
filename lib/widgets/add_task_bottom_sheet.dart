@@ -29,7 +29,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
   @override
   void initState() {
     super.initState();
-    // Инициализируем конечную дату такой же, как начальная
     _endDate = DateTime(_startDate.year, _startDate.month, _startDate.day);
   }
 
@@ -55,8 +54,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
           pickedTime.hour,
           pickedTime.minute,
         );
-
-        // Если время окончания раньше времени начала и это однодневная задача, корректируем
         if (!_isMultiDay && _endTime.isBefore(_startTime)) {
           _endTime = _startTime.add(const Duration(hours: 1));
         }
@@ -78,8 +75,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
         pickedTime.hour,
         pickedTime.minute,
       );
-
-      // Проверяем, что время окончания позже времени начала для однодневных задач
       if (_isMultiDay || newEndTime.isAfter(_startTime)) {
         setState(() {
           _endTime = newEndTime;
@@ -104,7 +99,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
 
     if (pickedDate != null) {
       setState(() {
-        // Обновляем дату начала, сохраняя время
         _startDate = DateTime(
           pickedDate.year,
           pickedDate.month,
@@ -114,8 +108,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
         );
 
         _startTime = _startDate;
-
-        // Если дата окончания раньше даты начала, устанавливаем её равной дате начала
         if (_endDate.isBefore(_startDate)) {
           _endDate = DateTime(
             _startDate.year,
@@ -134,13 +126,12 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _endDate,
-      firstDate: _startDate, // Конечная дата не может быть раньше начальной
+      firstDate: _startDate,
       lastDate: DateTime(2030),
     );
 
     if (pickedDate != null) {
       setState(() {
-        // Обновляем дату окончания, сохраняя время
         _endDate = DateTime(
           pickedDate.year,
           pickedDate.month,
@@ -158,7 +149,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
     setState(() {
       _isMultiDay = value;
       if (!_isMultiDay) {
-        // Если отключаем многодневный режим, устанавливаем конечную дату равной начальной
         _endDate = DateTime(
           _startDate.year,
           _startDate.month,
@@ -173,8 +163,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
   void _saveTask() {
     if (_formKey.currentState!.validate()) {
       final firebaseService = ref.read(firebaseServiceProvider);
-
-      // Создаем начальное и конечное время с учетом выбранных дат
       final startDateTime = DateTime(
         _startDate.year,
         _startDate.month,
@@ -190,8 +178,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
         _endTime.hour,
         _endTime.minute,
       );
-
-      // Проверяем, что конечное время позже начального
       if (endDateTime.isBefore(startDateTime)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -434,11 +420,6 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Сортировка\nзадач'),
-                    ),
-                    const SizedBox(width: 16),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text('Отмена'),

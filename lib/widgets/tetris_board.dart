@@ -2,23 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:technostrelka_2025/models/task1.dart';
 import 'package:technostrelka_2025/widgets/task_piece.dart';
-
-// Make the state class public so it can be referenced by GlobalKey
 class TetrisBoardState extends State<TetrisBoard> {
-  // Board dimensions
   static const int rows = 20;
   static const int columns = 10;
-
-  // Task positions on the board (taskId: {row, col})
   final Map<String, Map<String, int>> _taskPositions = {};
-
-  // Board state - tracks which cells are occupied
   List<List<String?>> _boardState = [];
-
-  // Timer for falling blocks
   Timer? _fallTimer;
-
-  // Currently dragged task
   String? _draggedTaskId;
 
   @override
@@ -26,7 +15,6 @@ class TetrisBoardState extends State<TetrisBoard> {
     super.initState();
     _initializeBoardState();
     _initializeTaskPositions();
-    // Start the falling timer
     _startFallingTimer();
   }
 
@@ -37,10 +25,7 @@ class TetrisBoardState extends State<TetrisBoard> {
   }
 
   void _startFallingTimer() {
-    // Cancel existing timer if any
     _fallTimer?.cancel();
-
-    // Create a new timer that runs every 1 second
     _fallTimer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
       _makeBlocksFall();
     });
@@ -48,23 +33,14 @@ class TetrisBoardState extends State<TetrisBoard> {
 
   void _makeBlocksFall() {
     bool anyMoved = false;
-
-    // Try to move each task down one row
     for (final taskId in _taskPositions.keys.toList()) {
-      // Skip the currently dragged task
       if (taskId == _draggedTaskId) continue;
-
-      // Find the task by ID, safely
       final taskIndex = widget.tasks.indexWhere((t) => t.id == taskId);
       if (taskIndex == -1) continue; // Skip if task not found
 
       final task = widget.tasks[taskIndex];
       final currentPos = _taskPositions[taskId]!;
-
-      // Temporarily remove the task from the board
       _removeTaskFromBoard(taskId);
-
-      // Check if the task can move down
       if (_isValidPosition(task, currentPos['row']! + 1, currentPos['col']!)) {
         _taskPositions[taskId] = {
           'row': currentPos['row']! + 1,
@@ -73,18 +49,13 @@ class TetrisBoardState extends State<TetrisBoard> {
         anyMoved = true;
       }
     }
-
-    // Update the board state
     _updateBoardState();
-
-    // Only rebuild if any task moved
     if (anyMoved) {
       setState(() {});
     }
   }
 
   void _initializeBoardState() {
-    // Initialize empty board
     _boardState = List.generate(
       rows,
       (_) => List.generate(columns, (_) => null),
@@ -94,8 +65,6 @@ class TetrisBoardState extends State<TetrisBoard> {
   @override
   void didUpdateWidget(TetrisBoard oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // Check for new tasks
     for (final task in widget.tasks) {
       if (!_taskPositions.containsKey(task.id)) {
         _placeNewTask(task);
@@ -110,15 +79,11 @@ class TetrisBoardState extends State<TetrisBoard> {
   }
 
   void _placeNewTask(Task task) {
-    // Start at the top center of the board
     int col = (columns ~/ 2) - (task.shape[0].length ~/ 2);
     int row = 0;
-
-    // Find a valid position for the new task
     while (!_isValidPosition(task, row, col)) {
       row++;
       if (row > rows - task.shape.length) {
-        // If we can't find a valid position, place it at the top
         row = 0;
         break;
       }
@@ -126,16 +91,11 @@ class TetrisBoardState extends State<TetrisBoard> {
 
     _taskPositions[task.id] = {'row': row, 'col': col};
     _updateBoardState();
-
-    // Make sure the widget rebuilds
     setState(() {});
   }
 
   void _updateBoardState() {
-    // Clear the board
     _initializeBoardState();
-
-    // Place all tasks on the board
     for (final task in widget.tasks) {
       final position = _taskPositions[task.id];
       if (position == null) continue;
@@ -163,8 +123,6 @@ class TetrisBoardState extends State<TetrisBoard> {
 
   void _moveTask(String taskId, int rowDelta, int colDelta) {
     if (!_taskPositions.containsKey(taskId)) return;
-
-    // Find the task by ID, safely
     final taskIndex = widget.tasks.indexWhere((t) => t.id == taskId);
     if (taskIndex == -1) return; // Return if task not found
 
@@ -173,18 +131,14 @@ class TetrisBoardState extends State<TetrisBoard> {
 
     final newRow = currentPos['row']! + rowDelta;
     final newCol = currentPos['col']! + colDelta;
-
-    // Temporarily remove the task from the board state
     _removeTaskFromBoard(taskId);
 
-    // Check if the move is valid (within board boundaries and no collision)
     if (_isValidPosition(task, newRow, newCol)) {
       setState(() {
         _taskPositions[taskId] = {'row': newRow, 'col': newCol};
         _updateBoardState();
       });
     } else {
-      // If move is invalid, add the task back to the board state
       _updateBoardState();
     }
   }
@@ -201,21 +155,15 @@ class TetrisBoardState extends State<TetrisBoard> {
 
   void _rotateTask(String taskId) {
     if (!_taskPositions.containsKey(taskId)) return;
-
-    // Find the task by ID, safely
     final taskIndex = widget.tasks.indexWhere((t) => t.id == taskId);
     if (taskIndex == -1) return; // Return if task not found
 
     final task = widget.tasks[taskIndex];
     final rotatedTask = task.rotated();
     final currentPos = _taskPositions[taskId]!;
-
-    // Temporarily remove the task from the board state
     _removeTaskFromBoard(taskId);
 
-    // Check if rotation is valid
     if (_isValidPosition(rotatedTask, currentPos['row']!, currentPos['col']!)) {
-      // Create a new task with the rotated shape but keep the same ID
       final newTask = Task(
         title: task.title,
         description: task.description,
@@ -223,33 +171,26 @@ class TetrisBoardState extends State<TetrisBoard> {
         color: task.color,
         shape: rotatedTask.shape,
       );
-
-      // Replace the task in the list
       setState(() {
         widget.tasks[taskIndex] = newTask;
-        // Ensure the ID mapping is preserved
         _taskPositions[newTask.id] = currentPos;
-        // Remove the old ID mapping if different
         if (newTask.id != taskId) {
           _taskPositions.remove(taskId);
         }
         _updateBoardState();
       });
     } else {
-      // If rotation is invalid, add the task back to the board state
       _updateBoardState();
     }
   }
 
   bool _isValidPosition(Task task, int row, int col) {
-    // Check if any part of the task would be below the bottom of the board
     for (int r = 0; r < task.shape.length; r++) {
       for (int c = 0; c < task.shape[r].length; c++) {
         if (task.shape[r][c] == 1) {
           final boardRow = row + r;
           final boardCol = col + c;
 
-          // Check board boundaries
           if (boardRow < 0 ||
               boardRow >= rows ||
               boardCol < 0 ||
@@ -257,7 +198,6 @@ class TetrisBoardState extends State<TetrisBoard> {
             return false;
           }
 
-          // Check collision with other tasks
           if (_boardState[boardRow][boardCol] != null &&
               _boardState[boardRow][boardCol] != task.id) {
             return false;
@@ -269,7 +209,6 @@ class TetrisBoardState extends State<TetrisBoard> {
     return true;
   }
 
-  // Public method to add a new task
   void addNewTask(Task task) {
     _placeNewTask(task);
   }
@@ -286,7 +225,6 @@ class TetrisBoardState extends State<TetrisBoard> {
         aspectRatio: columns / rows,
         child: Stack(
           children: [
-            // Grid background
             GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -304,8 +242,6 @@ class TetrisBoardState extends State<TetrisBoard> {
                 );
               },
             ),
-
-            // Floor indicator (bottom row highlighted)
             Positioned(
               bottom: 0,
               left: 0,
@@ -322,8 +258,6 @@ class TetrisBoardState extends State<TetrisBoard> {
                 ),
               ),
             ),
-
-            // Task pieces
             ...widget.tasks.map((task) {
               final position = _taskPositions[task.id];
               if (position == null) return const SizedBox.shrink();
@@ -335,31 +269,23 @@ class TetrisBoardState extends State<TetrisBoard> {
                 top: position['row']! * cellSize,
                 left: position['col']! * cellSize,
                 child: GestureDetector(
-                  // Improved drag handling
                   onPanStart: (details) {
                     setState(() {
                       _draggedTaskId = task.id;
                     });
-                    // Pause the falling timer while dragging
                     _fallTimer?.cancel();
                   },
                   onPanUpdate: (details) {
-                    // Convert drag delta to grid movement
                     final cellSize =
                         (MediaQuery.of(context).size.width - 32) / columns;
-
-                    // Calculate the new position based on absolute position
                     final RenderBox box =
                         context.findRenderObject() as RenderBox;
                     final localPosition = box.globalToLocal(
                       details.globalPosition,
                     );
-
-                    // Calculate grid position (ensure it's aligned to the grid)
                     int newRow = (localPosition.dy / cellSize).floor();
                     int newCol = (localPosition.dx / cellSize).floor();
 
-                    // Adjust for the task's shape
                     newRow = newRow - task.shape.length ~/ 2;
                     newCol = newCol - task.shape[0].length ~/ 2;
 

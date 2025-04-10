@@ -234,7 +234,6 @@ class TaskDetailBottomSheet extends ConsumerWidget {
   }
 
   void _showCompletionAnimation(BuildContext context, Task task) {
-    // Рассчитываем количество блоков на основе длительности задачи
     final durationInHours = task.endTime.difference(task.startTime).inHours;
     final categoryColor = AppTheme.getCategoryColor(task.category);
 

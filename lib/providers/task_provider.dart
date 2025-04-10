@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:technostrelka_2025/models/task.dart';
 import 'package:technostrelka_2025/services/firebase_service.dart';
 
-// Провайдер сервиса Firebase
 final firebaseServiceProvider = Provider<FirebaseService>((ref) {
   return FirebaseService();
 });
@@ -42,7 +41,6 @@ final selectedWeekProvider = StateProvider<DateTime>((ref) {
   return monday;
 });
 
-// Провайдер для выбранного месяца
 final selectedMonthProvider = StateProvider<DateTime>((ref) {
   final now = DateTime.now();
   return DateTime(now.year, now.month, 1);

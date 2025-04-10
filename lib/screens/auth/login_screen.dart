@@ -99,7 +99,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 80),
-                    // Glassmorphism login form
+
                     ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(20)),
                       child: BackdropFilter(
@@ -146,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                   const SizedBox(height: 25),
                                   
-                                  // Password field using TextInput component
+
                                   SizedBox(
                                     height: 50,
                                     child: TextInput(
@@ -167,7 +167,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                   const SizedBox(height: 25),
                                   
-                                  // Login button using MiniNextButton
+
                                   _isLoading
                                     ? const CircularProgressIndicator(color: Colors.white)
                                     : MiniNextButton(onPressed: _login),
