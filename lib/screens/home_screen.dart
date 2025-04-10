@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:technostrelka_2025/screens/day_view_screen.dart';
+import 'package:technostrelka_2025/screens/tetro_screen.dart';
 import 'package:technostrelka_2025/screens/week_view_screen.dart';
 import 'package:technostrelka_2025/screens/month_view_screen.dart';
 import 'package:technostrelka_2025/widgets/add_task_bottom_sheet.dart';
@@ -51,7 +52,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           IconButton(
             icon: const Icon(Icons.timer),
             onPressed: () {
-              Navigator.of(context).push();
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(builder: (context) => const TetroScreen()),
+              // );
             },
             tooltip: 'Pomodoro',
           ),

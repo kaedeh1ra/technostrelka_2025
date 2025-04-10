@@ -212,8 +212,8 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
         priority: _priority,
         isCompleted: false,
         createdAt: DateTime.now(),
-        color: Colors.amber,
-        size: TaskSize.medium,
+        // color: Colors.amber,
+        // size: TaskSize.medium,
       );
 
       // Сохраняем в Firebase
