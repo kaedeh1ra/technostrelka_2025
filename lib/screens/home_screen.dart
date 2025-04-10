@@ -47,14 +47,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TaskTetris'),
+        title: const Text('Tizy'),
         actions: [
           IconButton(
             icon: const Icon(Icons.timer),
             onPressed: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(builder: (context) => const TetroScreen()),
-              // );
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const TetroScreen()),
+              );
             },
             tooltip: 'Pomodoro',
           ),
