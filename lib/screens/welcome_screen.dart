@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:technostrelka_2025/screens/auth/register_screen.dart';
 import 'package:technostrelka_2025/theme/app_theme.dart';
 import 'package:technostrelka_2025/widgets/next_button.dart';
 
@@ -16,8 +15,7 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-
-// var width = MediaQuery.of(context).size.width;
+  // var width = MediaQuery.of(context).size.width;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +34,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             child: Padding(
               padding: EdgeInsets.only(top: 6, left: 4),
               child: SvgPicture.asset('assets/logos/tlm_logo.svg'),
-            )
+            ),
           ),
         ),
         WellcomeText(),
@@ -47,9 +45,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 }
 
 class WellcomeText extends StatelessWidget {
-  const WellcomeText({
-    super.key,
-  });
+  const WellcomeText({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,15 +55,16 @@ class WellcomeText extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: Colors.white, width: 8))
+            border: Border(top: BorderSide(color: Colors.white, width: 8)),
           ),
           child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Image.asset('assets/images/welcomeScreen/WellcomeText.png',
-            fit: BoxFit.contain,
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Image.asset(
+              'assets/images/welcomeScreen/WellcomeText.png',
+              fit: BoxFit.contain,
+            ),
           ),
         ),
-        )
       ],
     );
   }
@@ -79,51 +76,67 @@ class BuildWelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(bottom: 120, left: 40, right: 40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end,
-          spacing: 32,
-          children: [
-            // Image.asset('assets/icons/App_Logo_400x400.png',
-            //   width: 100,
-            //   height: 100,
-            //   fit: BoxFit.contain,
-            // ),
-            SizedBox(height: 320),
-            // SimpleWelcomeText(), // Обычный текст, а не картинка
-            NextButton(text: 'Начинаем', onPressed: () => {
-              context.go('/register')
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => RegisterScreen())
-              //   )
-              }
-            )
-          ],
-        ),
-      );
+      padding: EdgeInsets.only(bottom: 120, left: 40, right: 40),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        spacing: 32,
+        children: [
+          // Image.asset('assets/icons/App_Logo_400x400.png',
+          //   width: 100,
+          //   height: 100,
+          //   fit: BoxFit.contain,
+          // ),
+          SizedBox(height: 320),
+          // SimpleWelcomeText(), // Обычный текст, а не картинка
+          NextButton(
+            text: 'Начинаем',
+            onPressed:
+                () => {
+                  context.go('/register'),
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => RegisterScreen())
+                  //   )
+                },
+          ),
+        ],
+      ),
+    );
   }
 }
 
 class SimpleWelcomeText extends StatelessWidget {
-  const SimpleWelcomeText({
-    super.key,
-  });
+  const SimpleWelcomeText({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Твое',
-          style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white),
+        Text(
+          'Твое',
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
-        Text('время -',
-          style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white),
+        Text(
+          'время -',
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
-        Text('твои игра.',
-          style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white),
+        Text(
+          'твои игра.',
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ],
     );
