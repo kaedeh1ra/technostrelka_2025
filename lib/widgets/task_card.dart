@@ -18,9 +18,11 @@ class TaskCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side:
-            task.priority
+            task.isCompleted
+                ? BorderSide(color: Colors.green.shade300, width: 2)
+                : task.priority
                 ? BorderSide(color: Colors.red.shade300, width: 2)
-                : BorderSide.none,
+                : BorderSide(color: categoryColor.withOpacity(0.5), width: 2),
       ),
       color: categoryColor.withOpacity(0.1),
       child: Padding(

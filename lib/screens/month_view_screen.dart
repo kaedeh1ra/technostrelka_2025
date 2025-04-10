@@ -199,20 +199,10 @@ class MonthViewScreen extends ConsumerWidget {
           return 0;
         });
 
-    final remainingTasks = tasks.length - displayTasks.length;
-
     return SingleChildScrollView(
       child: Column(
         children: [
           ...displayTasks.map((task) => _buildTaskItem(context, task)),
-          if (remainingTasks > 0)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text(
-                '+ ещё $remainingTasks',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
         ],
       ),
     );
@@ -229,7 +219,12 @@ class MonthViewScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: categoryColor.withOpacity(0.2),
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: categoryColor.withOpacity(0.5)),
+          border:
+              task.isCompleted
+                  ? Border.all(color: Colors.green.shade300)
+                  : task.priority
+                  ? Border.all(color: Colors.red.shade300)
+                  : Border.all(color: categoryColor.withOpacity(0.5)),
         ),
         child: Text(
           task.title,

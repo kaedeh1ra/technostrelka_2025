@@ -7,12 +7,12 @@ class AppTheme {
   static const Color errorColor = Color(0xFFB00020);
   static const Color backgroundColor = Color(0xFFF5F5F5);
   static const Color darkBackgroundColor = Color(0xFF121212);
-  
+
   // Категории задач
   static const Color studyColor = Color(0xFF2196F3);
   static const Color workColor = Color(0xFF9C27B0);
   static const Color personalColor = Color(0xFF4CAF50);
-  
+
   // Светлая тема
   static final ThemeData lightTheme = ThemeData(
     useMaterial3: true,
@@ -28,9 +28,7 @@ class AppTheme {
     ),
     cardTheme: CardTheme(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: primaryColor,
@@ -38,20 +36,16 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       filled: true,
       fillColor: Colors.white,
     ),
   );
-  
+
   // Темная тема
   static final ThemeData darkTheme = ThemeData(
     useMaterial3: true,
@@ -67,9 +61,7 @@ class AppTheme {
     ),
     cardTheme: CardTheme(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: primaryColor,
@@ -77,20 +69,16 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       filled: true,
       fillColor: Colors.grey[800],
     ),
   );
-  
+
   // Получение цвета категории
   static Color getCategoryColor(String category) {
     switch (category) {

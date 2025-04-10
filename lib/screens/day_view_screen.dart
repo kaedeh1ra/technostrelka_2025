@@ -68,8 +68,8 @@ class DayViewScreen extends ConsumerWidget {
   }
 
   Widget _buildTimelineView(BuildContext context, List<Task> tasks) {
-    // Часы с 8:00 до 20:00
-    final hours = List.generate(13, (index) => index + 8);
+    // Часы с 0:00 до 23:00
+    final hours = List.generate(24, (index) => index);
 
     return ListView.builder(
       itemCount: hours.length,
@@ -140,7 +140,7 @@ class DayViewScreen extends ConsumerWidget {
       final height = 80.0 * heightPercentage;
 
       // Позиция по вертикали в зависимости от минут
-      final topOffset = (startMinute / 60.0) * 80.0;
+      final topOffset = (startMinute / 60.0) * 0.0;
 
       return Positioned(
         top: topOffset,

@@ -6,6 +6,8 @@ import 'package:technostrelka_2025/screens/month_view_screen.dart';
 import 'package:technostrelka_2025/widgets/add_task_bottom_sheet.dart';
 import 'package:technostrelka_2025/widgets/pomodoro_dialog.dart';
 
+import '../models/task.dart';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -40,10 +42,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  void _showPomodoroDialog() {
-    showDialog(context: context, builder: (context) => const PomodoroDialog());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.timer),
-            onPressed: _showPomodoroDialog,
+            onPressed: () {},
             tooltip: 'Pomodoro',
           ),
           IconButton(

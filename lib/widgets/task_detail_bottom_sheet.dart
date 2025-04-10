@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:technostrelka_2025/models/task.dart';
 import 'package:technostrelka_2025/providers/task_provider.dart';
 import 'package:technostrelka_2025/theme/app_theme.dart';
@@ -144,7 +145,7 @@ class TaskDetailBottomSheet extends ConsumerWidget {
               child: OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
-                  _showPomodoroDialog(context);
+                  _showPomodoroDialog(context, task);
                 },
                 icon: const Icon(Icons.timer),
                 label: const Text('Запустить Pomodoro'),
@@ -168,7 +169,6 @@ class TaskDetailBottomSheet extends ConsumerWidget {
         .updateTask(updatedTask)
         .then((_) {
           Navigator.pop(context);
-
           // Если задача отмечена как выполненная, проверяем длительность
           if (updatedTask.isCompleted) {
             final durationInDays =
@@ -258,8 +258,11 @@ class TaskDetailBottomSheet extends ConsumerWidget {
     // TODO: Здесь будет реализация метода neuroAnswer()
   }
 
-  void _showPomodoroDialog(BuildContext context) {
-    showDialog(context: context, builder: (context) => const PomodoroDialog());
+  void _showPomodoroDialog(BuildContext context, Task task) {
+    showDialog(
+      context: context,
+      builder: (context) => PomodoroDialog(task: task),
+    );
   }
 
   void _showEditTaskBottomSheet(BuildContext context, Task task) {

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-class PomodoroDialog extends StatefulWidget {
-  const PomodoroDialog({super.key});
+import '../models/task.dart';
 
+class PomodoroDialog extends StatefulWidget {
+  const PomodoroDialog({super.key, required this.task});
+  final Task task;
   @override
   State<PomodoroDialog> createState() => _PomodoroDialogState();
 }
@@ -155,7 +157,7 @@ class _PomodoroDialogState extends State<PomodoroDialog>
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(_isBreak ? 'Перерыв' : 'Pomodoro Таймер'),
+          Text(_isBreak ? 'Перерыв' : widget.task.title),
           IconButton(
             icon: Icon(_isSettingsOpen ? Icons.close : Icons.settings),
             onPressed: _toggleSettings,
@@ -215,12 +217,16 @@ class _PomodoroDialogState extends State<PomodoroDialog>
           ],
         ),
         const SizedBox(height: 24),
-        Text(
-          _isBreak
-              ? 'Время отдохнуть! Сделайте перерыв и расслабьтесь.'
-              : 'Сосредоточьтесь на задаче. Избегайте отвлечений.',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.grey[600]),
+        SingleChildScrollView(
+          child: Text(
+            _isBreak
+                ? 'Время отдохнуть! Сделайте перерыв и расслабьтесь.'
+                : widget.task.description.isEmpty
+                ? 'Сосредоточьтесь на задаче. Избегайте отвлечений.'
+                : widget.task.description,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey[600]),
+          ),
         ),
         const SizedBox(height: 16),
         Row(

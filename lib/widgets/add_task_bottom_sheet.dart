@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:technostrelka_2025/models/task.dart';
 import 'package:technostrelka_2025/providers/task_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yandex_gpt_rest_api/yandex_gpt_rest_api.dart';
 
 class AddTaskBottomSheet extends ConsumerStatefulWidget {
   const AddTaskBottomSheet({super.key});
@@ -14,7 +15,7 @@ class AddTaskBottomSheet extends ConsumerStatefulWidget {
 class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  var _descriptionController = TextEditingController();
 
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
@@ -23,6 +24,7 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
   String _category = 'Учёба';
   bool _priority = false;
   bool _isMultiDay = false;
+  String generatedText = '';
 
   @override
   void initState() {
@@ -229,6 +231,36 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
     }
   }
 
+  Future<void> _neuroAnswer() async {
+    var str = _descriptionController.toString();
+    final String iam =
+        't1.9euelZqJjI7PmY-KmInOy4qZysuPnO3rnpWajZWOmM3HmJSdycmUlJmVzo3l9PdyKSNA-e9lO1Ca3fT3MlggQPnvZTtQms3n9euelZrGjZ7HzMnKi4mOzs_KnpGelO_8xeuelZrGjZ7HzMnKi4mOzs_KnpGelA.-hqOG4kbQX-fPswaEj3CYi1UkC-Xh38jmEbcOTiAwiA1nhVwXKv9Nqf4DgdPQ5gM6xWTQRPFZJETKYj4M63QDg';
+    final String catalog_id = 'b1gur8mji0okqtoumgpg';
+    final api = YandexGptApi(token: AuthToken.iam(iam), catalog: catalog_id);
+    try {
+      final response = await api.generateText(
+        TextGenerationRequest(
+          model: GModel.yandexGpt(catalog_id),
+          messages: [
+            Message.system(
+              "Ты бот, задача которого проводить анализ задания и раписывать его на пункт. Ты не должен выводить ничего кроме этапов выполнения.",
+            ),
+            Message.user(str),
+          ],
+        ),
+      );
+
+      setState(() {
+        generatedText = response.alternatives.first.message.text;
+        _descriptionController = generatedText as TextEditingController;
+      });
+    } catch (e) {
+      setState(() {
+        generatedText = 'Ошибка: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -399,6 +431,11 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text('Сортировка\nзадач'),
+                  ),
+                  const SizedBox(width: 16),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: const Text('Отмена'),
