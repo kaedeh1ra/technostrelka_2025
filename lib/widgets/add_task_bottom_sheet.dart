@@ -263,191 +263,193 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Заголовок
-              const Center(
-                child: Text(
-                  'Добавить задачу',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Название задачи
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Название задачи',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите название задачи';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Переключатель многодневной задачи
-              SwitchListTile(
-                title: const Text('Многодневная задача'),
-                value: _isMultiDay,
-                onChanged: _toggleMultiDay,
-                contentPadding: EdgeInsets.zero,
-              ),
-              const SizedBox(height: 8),
-
-              // Дата начала
-              InkWell(
-                onTap: () => _selectStartDate(context),
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Дата начала',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Заголовок
+                const Center(
                   child: Text(
-                    '${_startDate.day}.${_startDate.month}.${_startDate.year}',
+                    'Добавить задачу',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Дата окончания (только для многодневных задач)
-              if (_isMultiDay) ...[
+                // Название задачи
+                TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Название задачи',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Пожалуйста, введите название задачи';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Переключатель многодневной задачи
+                SwitchListTile(
+                  title: const Text('Многодневная задача'),
+                  value: _isMultiDay,
+                  onChanged: _toggleMultiDay,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                const SizedBox(height: 8),
+
+                // Дата начала
                 InkWell(
-                  onTap: () => _selectEndDate(context),
+                  onTap: () => _selectStartDate(context),
                   child: InputDecorator(
                     decoration: const InputDecoration(
-                      labelText: 'Дата окончания',
+                      labelText: 'Дата начала',
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.calendar_today),
                     ),
                     child: Text(
-                      '${_endDate.day}.${_endDate.month}.${_endDate.year}',
+                      '${_startDate.day}.${_startDate.month}.${_startDate.year}',
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-              ],
 
-              // Время начала и окончания
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => _selectStartTime(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Начало',
-                          border: OutlineInputBorder(),
-                          suffixIcon: Icon(Icons.access_time),
-                        ),
-                        child: Text(
-                          '${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
-                        ),
+                // Дата окончания (только для многодневных задач)
+                if (_isMultiDay) ...[
+                  InkWell(
+                    onTap: () => _selectEndDate(context),
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Дата окончания',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      child: Text(
+                        '${_endDate.day}.${_endDate.month}.${_endDate.year}',
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => _selectEndTime(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Окончание',
-                          border: OutlineInputBorder(),
-                          suffixIcon: Icon(Icons.access_time),
-                        ),
-                        child: Text(
-                          '${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}',
+                  const SizedBox(height: 16),
+                ],
+
+                // Время начала и окончания
+                Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => _selectStartTime(context),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            labelText: 'Начало',
+                            border: OutlineInputBorder(),
+                            suffixIcon: Icon(Icons.access_time),
+                          ),
+                          child: Text(
+                            '${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => _selectEndTime(context),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            labelText: 'Окончание',
+                            border: OutlineInputBorder(),
+                            suffixIcon: Icon(Icons.access_time),
+                          ),
+                          child: Text(
+                            '${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Описание
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Описание',
+                    border: OutlineInputBorder(),
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Описание
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Описание',
-                  border: OutlineInputBorder(),
+                  maxLines: 3,
                 ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Категория
-              DropdownButtonFormField<String>(
-                value: _category,
-                decoration: const InputDecoration(
-                  labelText: 'Категория',
-                  border: OutlineInputBorder(),
+                // Категория
+                DropdownButtonFormField<String>(
+                  value: _category,
+                  decoration: const InputDecoration(
+                    labelText: 'Категория',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'Учёба', child: Text('Учёба')),
+                    DropdownMenuItem(value: 'Работа', child: Text('Работа')),
+                    DropdownMenuItem(value: 'Личное', child: Text('Личное')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _category = value;
+                      });
+                    }
+                  },
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'Учёба', child: Text('Учёба')),
-                  DropdownMenuItem(value: 'Работа', child: Text('Работа')),
-                  DropdownMenuItem(value: 'Личное', child: Text('Личное')),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
+                const SizedBox(height: 16),
+
+                // Важность
+                SwitchListTile(
+                  title: const Text('Важная задача'),
+                  value: _priority,
+                  onChanged: (value) {
                     setState(() {
-                      _category = value;
+                      _priority = value;
                     });
-                  }
-                },
-              ),
-              const SizedBox(height: 16),
+                  },
+                  contentPadding: EdgeInsets.zero,
+                ),
+                const SizedBox(height: 16),
 
-              // Важность
-              SwitchListTile(
-                title: const Text('Важная задача'),
-                value: _priority,
-                onChanged: (value) {
-                  setState(() {
-                    _priority = value;
-                  });
-                },
-                contentPadding: EdgeInsets.zero,
-              ),
-              const SizedBox(height: 16),
-
-              // Кнопки
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text('Сортировка\nзадач'),
-                  ),
-                  const SizedBox(width: 16),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Отмена'),
-                  ),
-                  const SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: _saveTask,
-                    child: const Text('Сохранить'),
-                  ),
-                ],
-              ),
-            ],
+                // Кнопки
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Сортировка\nзадач'),
+                    ),
+                    const SizedBox(width: 16),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Отмена'),
+                    ),
+                    const SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: _saveTask,
+                      child: const Text('Сохранить'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
