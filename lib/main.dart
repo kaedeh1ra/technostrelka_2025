@@ -6,6 +6,7 @@ import 'package:technostrelka_2025/screens/auth/login_screen.dart';
 import 'package:technostrelka_2025/screens/auth/register_screen.dart';
 import 'package:technostrelka_2025/screens/home_screen.dart';
 import 'package:technostrelka_2025/screens/splash_screen.dart';
+import 'package:technostrelka_2025/screens/welcome_screen.dart';
 import 'package:technostrelka_2025/theme/app_theme.dart';
 
 void main() async {
@@ -21,6 +22,7 @@ final _router = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
+    GoRoute(path: '/welcome', builder: (context, state) => const WelcomeScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: '/register',

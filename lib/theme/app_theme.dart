@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  // Цвета живого градиента на фоне
+  static const List<Color> gradientColors = [Color(0XFFFC7E03), Colors.black, Colors.black, Color(0xFFFD0F02)];
+
   // Цветовая схема
   static const Color primaryColor = Color(0xFF6200EE);
   static const Color secondaryColor = Color(0xFF03DAC6);
