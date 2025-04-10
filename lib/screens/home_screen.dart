@@ -50,7 +50,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.timer),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push();
+            },
             tooltip: 'Pomodoro',
           ),
           IconButton(
